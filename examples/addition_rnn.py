@@ -77,11 +77,32 @@ LAYERS = 1
 MAXLEN = DIGITS + 1 + DIGITS
 
 chars = '0123456789+ '
+print(chars)
+print(sorted(chars))
 ctable = CharacterTable(chars, MAXLEN)
 
 questions = []
 expected = []
 seen = set()
+
+def my_f():
+    x=[]
+    for i in range(np.random.randint(1, DIGITS + 1)) :
+        x.append(np.random.choice(list('0123456789')))
+    return int(''.join(x))
+
+a= my_f()    
+b= my_f()
+print(a,b)
+#print sorted((a,b))
+y=sorted((a,b))
+#xxx print y --> syntax error ?
+print(y)
+
+sentence='987+654' #'312+256'
+x=ctable.encode(sentence, maxlen=MAXLEN)
+print(x)
+
 print('Generating data...')
 while len(questions) < TRAINING_SIZE:
     f = lambda: int(''.join(np.random.choice(list('0123456789')) for i in range(np.random.randint(1, DIGITS + 1))))
