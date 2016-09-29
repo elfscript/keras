@@ -1,0 +1,51 @@
+print(X_val[1,:,:])
+
+
+[[False False False False False False False False False  True False False]
+ [False False False False False False False False False False  True False]
+ [False False False False False False  True False False False False False]
+ [False  True False False False False False False False False False False]
+ [False False False False False False False False False  True False False]
+ [False False False False False False False False False  True False False]
+ [False False False False False False False False False False  True False]]
+ 
+
+myrowX=X_val[[1]]
+print(myrowX[0])
+
+[[False False False False False False False False False  True False False]
+ [False False False False False False False False False False  True False]
+ [False False False False False False  True False False False False False]
+ [False  True False False False False False False False False False False]
+ [False False False False False False False False False  True False False]
+ [False False False False False False False False False  True False False]
+ [False False False False False False False False False False  True False]]
+ 
+ [Q] seems no difference between ?
+ myrowX=X_val[[1]]
+ myrowX=X_val[np.array([1])]
+ 
+//===
+indices = np.arange(len(y))
+np.random.shuffle(indices)
+
+>>> np.arrange(4)
+AttributeError: 'module' object has no attribute 'arrange'
+
+>>> np.arange(4)
+array([0, 1, 2, 3])
+>>> np.arange(5)
+array([0, 1, 2, 3, 4])
+>>> np.arange(3)
+array([0, 1, 2])
+
+//===
+# "Encode" the input sequence using an RNN, producing an output of HIDDEN_SIZE
+# note: in a situation where your input sequences have a variable length,
+# use input_shape=(None, nb_feature).
+# here , nb_feature=12 = len(' +0123456789')
+# HIDDEN_SIZE=128, MAXLEN=7 = DIGITS*2 +1
+model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, len(chars))))
+
+# For the decoder's input, we repeat the encoded input for each time step
+model.add(RepeatVector(DIGITS + 1))

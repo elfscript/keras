@@ -76,9 +76,10 @@ BATCH_SIZE = 128
 LAYERS = 1
 MAXLEN = DIGITS + 1 + DIGITS
 
-chars = '0123456789+ '
-print(chars)
-print(sorted(chars))
+# chars = '0123456789+ '
+# print(chars)
+# print(sorted(chars))
+chars = ' +0123456789'
 ctable = CharacterTable(chars, MAXLEN)
 
 questions = []
@@ -139,16 +140,25 @@ np.random.shuffle(indices)
 X = X[indices]
 y = y[indices]
 
+# print(X.shape), (50k, 7, 12)
+# print(y.shape), (50k, 4, 12)
+
 # Explicitly set apart 10% for validation data that we never train over
 split_at = len(X) - len(X) / 10
 (X_train, X_val) = (slice_X(X, 0, split_at), slice_X(X, split_at))
 (y_train, y_val) = (y[:split_at], y[split_at:])
+#   slice_x() or [:split_at] ???
 
-print(X_train.shape)
-print(y_train.shape)
+# print(X_train.shape), (45k, 7, 12)
+# print(y_train.shape), (45k, 4, 12)
+print(X_val[1,:,:])
+myrowX=X_val[np.array([1])]
+print(myrowX[0])
 
 print('Build model...')
 model = Sequential()
+# https://keras.io/models/sequential/
+
 # "Encode" the input sequence using an RNN, producing an output of HIDDEN_SIZE
 # note: in a situation where your input sequences have a variable length,
 # use input_shape=(None, nb_feature).
@@ -174,6 +184,8 @@ for iteration in range(1, 200):
     print('Iteration', iteration)
     model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=1,
               validation_data=(X_val, y_val))
+    # nb_epoch: integer, the number of epochs to train the model.          
+    
     ###
     # Select 10 samples from the validation set at random so we can visualize errors
     for i in range(10):
