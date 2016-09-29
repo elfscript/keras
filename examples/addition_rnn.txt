@@ -1,5 +1,24 @@
-print(X_val[1,:,:])
+training data :
+(50k, 7, 12)
 
+[Q] why use one-hot vector ?
+[Q] batch_size is related to lstm_size(output dim of lstm cell) ??
+
+[Q] for an input digits of length 7, say  '361+279',
+it is converted to 7 one-hot vector of length 12,
+7 == time_step_size
+each one-hot vector is fed into LSTM/RNN(unrolled) step by step
+after 7 steps of recurrence, 
+
+input the next 7-digit , etc.
+
+...
+
+so the batch_size is just to separate the inputs into batches,
+seems nothing related to lstm_size
+
+//===
+print(X_val[1,:,:])
 
 [[False False False False False False False False False  True False False]
  [False False False False False False False False False False  True False]
