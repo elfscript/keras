@@ -33,6 +33,8 @@ from keras.layers import Activation, TimeDistributed, Dense, RepeatVector, recur
 import numpy as np
 from six.moves import range
 
+from keras import backend as K
+
 
 class CharacterTable(object):
     '''
@@ -158,6 +160,7 @@ print(myrowX[0])
 print('Build model...')
 model = Sequential()
 # https://keras.io/models/sequential/
+# [Q] keras model how to get state/weigthings for each layer?
 
 # "Encode" the input sequence using an RNN, producing an output of HIDDEN_SIZE
 # note: in a situation where your input sequences have a variable length,
@@ -177,6 +180,21 @@ model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
+#=== functional API can be defined after model.compile ?
+get_3rd_layer_output = K.function([model.layers[0].input],
+                                  [model.layers[0].output])
+
+#xxx layer_output = get_3rd_layer_output([X_val[0]])
+# ValueError: Cannot feed value of shape (7, 12) for Tensor u'lstm_input_1:0', 
+# which has shape '(?, 7, 12)'
+# layer_output = get_3rd_layer_output([X_val])[0] --> 5000x128
+# layer_output = get_3rd_layer_output([X_val]) # --> List
+layer_output = get_3rd_layer_output([X_train[0:127]])
+# batch_size=128, time_step_size=7, lstm_size=128, nb_feature=12
+
+print('is model stateful?')
+print(model.stateful)
+
 # Train the model each generation and show predictions against the validation dataset
 for iteration in range(1, 200):
     print()
@@ -186,6 +204,15 @@ for iteration in range(1, 200):
               validation_data=(X_val, y_val))
     # nb_epoch: integer, the number of epochs to train the model.          
     
+    #print('layer0 output shape = ')
+    #print(layer_output.shape)
+    print(len(layer_output))
+    for i in range(len(layer_output)) :
+        print(layer_output[i].shape)
+    
+    # xxx print(model.layers[0].input.shape)
+    # AttributeError: 'Tensor' object has no attribute 'shape'
+    print(model.layers[0].input.get_shape())
     ###
     # Select 10 samples from the validation set at random so we can visualize errors
     for i in range(10):
@@ -199,3 +226,4 @@ for iteration in range(1, 200):
         print('T', correct)
         print(colors.ok + '☑' + colors.close if correct == guess else colors.fail + '☒' + colors.close, guess)
         print('---')
+       

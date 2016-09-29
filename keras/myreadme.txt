@@ -134,3 +134,12 @@ from .utils.generic_utils import get_from_module
 def get(identifier, **kwargs):
     return get_from_module(identifier, globals(),
                            'initialization', kwargs=kwargs)
+
+
+//===
+>>> x=np.random.randint(2, size=10)
+>>> x
+array([0, 0, 0, 0, 1, 0, 0, 1, 1, 1])
+>>> x[0:2]
+array([0, 0])
+
