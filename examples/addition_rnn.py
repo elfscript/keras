@@ -153,7 +153,7 @@ split_at = len(X) - len(X) / 10
 
 print(X_train.shape) #, (45k, 7, 12)
 print(y_train.shape) #, (45k, 4, 12)
-print(X_train[1,:,:]) # (7,12)
+print(X_val[0,:,:]) # (7,12)
 # myrowX=X_val[np.array([1])]
 # print(myrowX[0])
 
@@ -166,31 +166,39 @@ model = Sequential()
 # note: in a situation where your input sequences have a variable length,
 # use input_shape=(None, nb_feature).
 model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, len(chars))))
+# model.layers[0] output : (batch_size, HIDDEN_SIZE)
+
 # For the decoder's input, we repeat the encoded input for each time step
-model.add(RepeatVector(DIGITS + 1))
+# deliberately extend input to 4 times for final output of 4 digits
+model.add(RepeatVector(DIGITS + 1)) # --> (batch_size,4,128)
+
 # The decoder RNN could be multiple layers stacked or a single layer
-for _ in range(LAYERS):
-    model.add(RNN(HIDDEN_SIZE, return_sequences=True))
+for _ in range(LAYERS): 
+    model.add(RNN(HIDDEN_SIZE, return_sequences=True)) # (batch_size, time_step_size=4, HIDDEN_SIZE)
+#layer2
 
 # For each of step of the output sequence, decide which character should be chosen
 # append a conventional(dense) nn layer to the output of each time step
-model.add(TimeDistributed(Dense(len(chars))))
-model.add(Activation('softmax'))
+# input HIDDEN_SIZE, output 12, Weight matrix (HIDDEN_SIZE, 12)
+model.add(TimeDistributed(Dense(len(chars)))) #layer 3
+model.add(Activation('softmax')) # layer 4
+
+
 
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
 #=== functional API can be defined after model.compile ?
-get_layer_output = K.function([model.layers[0].input],
-                                  [model.layers[0].output])
+#get_layer_output = K.function([model.layers[0].input],
+#                                  [model.layers[1].output[0,:,:], model.layers[2].output[0,:,:]])
 
 #xxx layer_output = get_3rd_layer_output([X_val[0]])
 # ValueError: Cannot feed value of shape (7, 12) for Tensor u'lstm_input_1:0', 
 # which has shape '(?, 7, 12)'
 # layer_output = get_3rd_layer_output([X_val])[0] --> 5000x128
 # layer_output = get_3rd_layer_output([X_val]) # --> List
-layer_output = get_layer_output([X_train[0:32]])
+# layer_output = get_layer_output([X_val[0:32]])
 # batch_size=128, time_step_size=7, lstm_size=128, nb_feature=12
 
 print('is model stateful?')
@@ -205,12 +213,16 @@ for iteration in range(1, 200):
               validation_data=(X_val, y_val))
     # nb_epoch: integer, the number of epochs to train the model.          
     
+    # after model.fit()
+    get_layer_output = K.function([model.layers[0].input],  [model.layers[4].output] )
+    layer_output = get_layer_output([X_val[0:32]])
+
     #print('layer0 output shape = ')
     #print(layer_output.shape)
     print(len(layer_output)) # --> 1
     for i in range(len(layer_output)) :
-        print(layer_output[i].shape) # --> [32,128]
-        print(layer_output[i])
+        print(layer_output[i].shape) # --> [32,4,12]
+        print(np.argmax(layer_output[i], axis=-1))
     
     # xxx print(model.layers[0].input.shape)
     # AttributeError: 'Tensor' object has no attribute 'shape'
@@ -219,14 +231,20 @@ for iteration in range(1, 200):
     ###
     # Select 10 samples from the validation set at random so we can visualize errors
     for i in range(10):
-        ind = np.random.randint(0, len(X_val))
+        ind = i # np.random.randint(0, len(X_val))
         rowX, rowy = X_val[np.array([ind])], y_val[np.array([ind])]
+        # print(rowX.shape) , # (1, 7, 12)
         preds = model.predict_classes(rowX, verbose=0)
+        print("predicts[0]",preds[0])
+        print(preds[0].shape)
         #print(model.layers[0].input)
         #--> Tensor("lstm_input_1:0", shape=(?, 7, 12), dtype=float32)
-        q = ctable.decode(rowX[0])
+        q = ctable.decode(rowX[0]) 
         correct = ctable.decode(rowy[0])
         guess = ctable.decode(preds[0], calc_argmax=False)
+        g2= ctable.decode(layer_output[0][i,:,:]) # (1,4,12) --> (4,12)
+        print("g2",g2)
+        
         print('Q', q[::-1] if INVERT else q)
         print('T', correct)
         print(colors.ok + '☑' + colors.close if correct == guess else colors.fail + '☒' + colors.close, guess)

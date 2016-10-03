@@ -65,11 +65,55 @@ array([0, 1, 2])
 # here , nb_feature=12 = len(' +0123456789')
 # HIDDEN_SIZE=128, MAXLEN=7 = DIGITS*2 +1
 model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, len(chars))))
+# return_sequences=False
+# output(batch_size, HIDDEN_SIZE) 
 
 # For the decoder's input, we repeat the encoded input for each time step
 model.add(RepeatVector(DIGITS + 1))
+    
+model.add(RNN(HIDDEN_SIZE, return_sequences=True)) 
+# input/output (batch_size, time_step_size=4, HIDDEN_SIZE)
+
+# input HIDDEN_SIZE, output 12, Weight matrix (HIDDEN_SIZE, 12)
+model.add(TimeDistributed(Dense(len(chars))))
+model.add(Activation('softmax'))
 
 
 //=== layers/core.py
 class RepeatVector(Layer):
     '''Repeats the input n times.
+
+# deliberately extend input to 4 times for final output of 4 digits
+model.add(RepeatVector(DIGITS + 1)) # --> (batch_size,4,128)
+
+
+//=== Keras functional API 
+get_layer_output = K.function([model.layers[0].input],
+                                  [model.layers[1].output[0,:,:], model.layers[2].output[0,:,:]])
+
+[(4,128), (4,128)]
+
+# input HIDDEN_SIZE, output 12, Weight matrix (HIDDEN_SIZE, 12)
+model.add(TimeDistributed(Dense(len(chars)))) # --> (batch_size, 4, 12)
+model.add(Activation('softmax'))  # --> (batch_size, 4, 12)
+
+get_layer_output = K.function([model.layers[0].input],  [model.layers[3].output, model.layers[4].output] )
+
+[[[-0.01177467  0.014951   -0.01008186 ...,  0.00254087 -0.02437055
+    0.02077679] ...
+    
+[[[ 0.0822008   0.08442728  0.08234006 ...,  0.083386    0.08117189
+    0.08492058]    
+    
+    
+//===
+rowX, rowy = X_val[np.array([ind])], y_val[np.array([ind])]
+preds = model.predict_classes(rowX, verbose=0)
+q = ctable.decode(rowX[0]) #(7,12) --> 7-digit string
+correct = ctable.decode(rowy[0])  --> 4-digit string
+guess = ctable.decode(preds[0], calc_argmax=False)
+
+* q, correct, guess are of type string
+
+
+keras model.predict classes()
