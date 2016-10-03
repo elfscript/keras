@@ -68,3 +68,8 @@ model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, len(chars))))
 
 # For the decoder's input, we repeat the encoded input for each time step
 model.add(RepeatVector(DIGITS + 1))
+
+
+//=== layers/core.py
+class RepeatVector(Layer):
+    '''Repeats the input n times.

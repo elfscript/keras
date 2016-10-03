@@ -30,7 +30,7 @@ max_length = 80
 embedding_dim = 256
 batch_size = 128
 epochs = 10
-modes = ['cpu', 'mem', 'gpu']
+modes = ['cpu', 'mem'] #, 'gpu']
 
 print('Loading data...')
 (X_train, y_train), (X_test, y_test) = imdb.load_data(nb_words=max_features)

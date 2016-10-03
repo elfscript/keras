@@ -68,13 +68,13 @@ class colors:
     close = '\033[0m'
 
 # Parameters for the model and dataset
-TRAINING_SIZE = 50000
+TRAINING_SIZE = 5000 #50000
 DIGITS = 3
 INVERT = True
 # Try replacing GRU, or SimpleRNN
 RNN = recurrent.LSTM
 HIDDEN_SIZE = 128
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 LAYERS = 1
 MAXLEN = DIGITS + 1 + DIGITS
 
@@ -151,11 +151,11 @@ split_at = len(X) - len(X) / 10
 (y_train, y_val) = (y[:split_at], y[split_at:])
 #   slice_x() or [:split_at] ???
 
-# print(X_train.shape), (45k, 7, 12)
-# print(y_train.shape), (45k, 4, 12)
-print(X_val[1,:,:])
-myrowX=X_val[np.array([1])]
-print(myrowX[0])
+print(X_train.shape) #, (45k, 7, 12)
+print(y_train.shape) #, (45k, 4, 12)
+print(X_train[1,:,:]) # (7,12)
+# myrowX=X_val[np.array([1])]
+# print(myrowX[0])
 
 print('Build model...')
 model = Sequential()
@@ -173,6 +173,7 @@ for _ in range(LAYERS):
     model.add(RNN(HIDDEN_SIZE, return_sequences=True))
 
 # For each of step of the output sequence, decide which character should be chosen
+# append a conventional(dense) nn layer to the output of each time step
 model.add(TimeDistributed(Dense(len(chars))))
 model.add(Activation('softmax'))
 
@@ -181,7 +182,7 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 #=== functional API can be defined after model.compile ?
-get_3rd_layer_output = K.function([model.layers[0].input],
+get_layer_output = K.function([model.layers[0].input],
                                   [model.layers[0].output])
 
 #xxx layer_output = get_3rd_layer_output([X_val[0]])
@@ -189,7 +190,7 @@ get_3rd_layer_output = K.function([model.layers[0].input],
 # which has shape '(?, 7, 12)'
 # layer_output = get_3rd_layer_output([X_val])[0] --> 5000x128
 # layer_output = get_3rd_layer_output([X_val]) # --> List
-layer_output = get_3rd_layer_output([X_train[0:127]])
+layer_output = get_layer_output([X_train[0:32]])
 # batch_size=128, time_step_size=7, lstm_size=128, nb_feature=12
 
 print('is model stateful?')
@@ -206,19 +207,23 @@ for iteration in range(1, 200):
     
     #print('layer0 output shape = ')
     #print(layer_output.shape)
-    print(len(layer_output))
+    print(len(layer_output)) # --> 1
     for i in range(len(layer_output)) :
-        print(layer_output[i].shape)
+        print(layer_output[i].shape) # --> [32,128]
+        print(layer_output[i])
     
     # xxx print(model.layers[0].input.shape)
     # AttributeError: 'Tensor' object has no attribute 'shape'
-    print(model.layers[0].input.get_shape())
+    #print(model.layers[0].input.get_shape())
+    # [?, 7,12]
     ###
     # Select 10 samples from the validation set at random so we can visualize errors
     for i in range(10):
         ind = np.random.randint(0, len(X_val))
         rowX, rowy = X_val[np.array([ind])], y_val[np.array([ind])]
         preds = model.predict_classes(rowX, verbose=0)
+        #print(model.layers[0].input)
+        #--> Tensor("lstm_input_1:0", shape=(?, 7, 12), dtype=float32)
         q = ctable.decode(rowX[0])
         correct = ctable.decode(rowy[0])
         guess = ctable.decode(preds[0], calc_argmax=False)
