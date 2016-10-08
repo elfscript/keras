@@ -68,7 +68,7 @@ class colors:
     close = '\033[0m'
 
 # Parameters for the model and dataset
-TRAINING_SIZE = 50000 #50000
+TRAINING_SIZE =2500 #50000
 DIGITS = 3
 INVERT = True
 # Try replacing GRU, or SimpleRNN
@@ -158,7 +158,7 @@ model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, len(chars))))
 
 # For the decoder's input, we repeat the encoded input for each time step
 # deliberately extend input to 4 times for final output of 4 digits
-model.add(RepeatVector(DIGITS + 1)) # --> (batch_size,4,128)
+model.add(RepeatVector(DIGITS + 1)) # --> (batch_size,4,HIDDEN_SIZE)
 
 # The decoder RNN could be multiple layers stacked or a single layer
 for _ in range(LAYERS): 
@@ -186,7 +186,7 @@ for iteration in range(1, 20):
     print()
     print('-' * 50)
     print('Iteration', iteration)
-    model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=1,
+    model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=2,
               validation_data=(X_val, y_val))
     # nb_epoch: integer, the number of epochs to train the model.          
     

@@ -12,7 +12,7 @@ backend (`K`), our code can run both on TensorFlow and Theano.
 
 from __future__ import print_function
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Layer, Activation
+from keras.layers import Dense, Dropout, Layer, Activation, ThresholdedReLU
 from keras.datasets import mnist
 from keras import backend as K
 from keras.utils import np_utils
@@ -65,6 +65,9 @@ nb_epoch = 40
 
 # the data, shuffled and split between train and test sets
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
+# mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+# trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
+
 
 X_train = X_train.reshape(60000, 784)
 X_test = X_test.reshape(10000, 784)
@@ -82,9 +85,12 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 # build the model
 model = Sequential()
 model.add(Dense(256, input_shape=(784,)))
+# model.add(ThresholdedReLU(0.0)) 
+#xxx model.add(K.relu)
 model.add(Antirectifier())
 model.add(Dropout(0.1))
 model.add(Dense(256))
+# model.add(ThresholdedReLU(0.0)) 
 model.add(Antirectifier())
 model.add(Dropout(0.1))
 model.add(Dense(10))
