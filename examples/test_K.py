@@ -66,6 +66,7 @@ model.add(Embedding(max_features,
                     input_length=maxlen,
                     dropout=0.2))
 
+model.summary()
 
 
 model.compile(loss='binary_crossentropy',
@@ -78,7 +79,7 @@ model.compile(loss='binary_crossentropy',
 # xxx preds = model.predict_classes(rowX, verbose=0)
 #preds = model.predict_classes(X_test, verbose=0)
 K.set_learning_phase(0) 
-get_layer_output = K.function([model.input],  [model.layers[0].output] )
+get_layer_output = K.function([model.input],  [model.output] )
 layer_output = get_layer_output([ X_test[0:batch_size] ])  #xxx , keras_learning_phase='bob')
 print('embedding layer op shape = ', layer_output.shape)
 print('embedding layer op[0:2] = ', layer_output[0:2])
