@@ -78,8 +78,8 @@ model.compile(loss='binary_crossentropy',
 # rowX=X_test[0]
 # xxx preds = model.predict_classes(rowX, verbose=0)
 #preds = model.predict_classes(X_test, verbose=0)
-K.set_learning_phase(0) 
-get_layer_output = K.function([model.input],  [model.output] )
-layer_output = get_layer_output([ X_test[0:batch_size] ])  #xxx , keras_learning_phase='bob')
-print('embedding layer op shape = ', layer_output.shape)
-print('embedding layer op[0:2] = ', layer_output[0:2])
+# K.set_learning_phase(0) 
+get_layer_output = K.function([model.input, K.learning_phase()],  [model.output] )
+layer_output = get_layer_output([ X_test[0:batch_size],0 ])  #xxx , keras_learning_phase='bob')
+print('embedding layer op shape = ', layer_output[0].shape)
+print("embedding layer op[0]'s the first 3 rows = ", layer_output[0][0:2])
