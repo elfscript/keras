@@ -17,9 +17,9 @@ from keras.datasets import imdb
 
 
 # Embedding
-max_features = 20000
-maxlen = 100
-embedding_size = 128
+max_features = 20000 #number of different words, choose the top 20k words from dictionary
+maxlen = 100 #number of words in a sentence/review, time_step_size
+embedding_size = 128 # one word to length-128 vector
 
 # Convolution
 filter_length = 5
@@ -64,6 +64,9 @@ model.add(MaxPooling1D(pool_length=pool_length))
 model.add(LSTM(lstm_output_size))
 model.add(Dense(1))
 model.add(Activation('sigmoid'))
+
+#model.summary()
+#exit()
 
 model.compile(loss='binary_crossentropy',
               optimizer='adam',

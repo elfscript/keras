@@ -1,0 +1,60 @@
+2-gram : phrase composed of two words
+n-gram : phrase composed of n words
+
+bi-gram === 2-gram
+uni-gram === 1-gram
+tri-gram === 3-gram
+
+given a sentence of length 400 with words from top 20k dictionary,
+say, [3, 601, 1024, ... ]
+
+append n-grams to the sentence,
+why not prepend?
+
+n-grams should be properly arranged to match the original positions within the sentence,
+or just partition the sentence into composition of n-grams ?
+
+
+
+
+# =============
+* create ngram_set from the whole X_train sequences
+ ngram_set = set()
+    for input_list in X_train:
+        for i in range(2, ngram_range+1):
+            set_of_ngram = create_ngram_set(input_list, ngram_value=i)
+            ngram_set.update(set_of_ngram)
+            
+            
+            
+
+#=== python set() change elements' order
+>>> x=[(1,4),(4,9),(9,4),(4,1),(1,4)]
+>>> x
+[(1, 4), (4, 9), (9, 4), (4, 1), (1, 4)]
+>>> y=set(x)
+>>> y
+set([(4, 1), (4, 9), (9, 4), (1, 4)])
+>>> 
+
+
+Sets are lists with no duplicate entries. Let's say you want to collect a list of words used in a paragraph:
+
+print set("my name is Eric and Eric is my name".split())
+
+
+
+#===  python set() change elements' order, but not ordered?
+>> x="h j b k d g i e a c f".split()                                                                                
+>>> x
+['h', 'j', 'b', 'k', 'd', 'g', 'i', 'e', 'a', 'c', 'f']
+>>> set(x)
+set(['a', 'c', 'b', 'e', 'd', 'g', 'f', 'i', 'h', 'k', 'j'])
+>>> 
+
+
+#===  set is a data structure optimized for set operations, 
+and like a mathematical set, it does not enforce/maintain any particular order of the elements. 
+The abstract concept of set does no enforce order, so does not the implementation.
+
+

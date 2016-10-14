@@ -21,9 +21,10 @@ from keras.layers import Dense, Dropout, Activation, Embedding
 from keras.layers import LSTM, SimpleRNN, GRU
 from keras.datasets import imdb
 
-max_features = 20000
-maxlen = 80  # cut texts after this number of words (among top max_features most common words)
+max_features = 20000 # top 20k words from dictionary
+maxlen = 80  # number of words per sentence/review, cut texts after this number of words (among top max_features most common words)
 batch_size = 32
+embedding_size=128 # one word to length-128 vector
 
 print('Loading data...')
 (X_train, y_train), (X_test, y_test) = imdb.load_data(nb_words=max_features)
@@ -42,6 +43,9 @@ model.add(Embedding(max_features, 128, dropout=0.2))
 model.add(LSTM(128, dropout_W=0.2, dropout_U=0.2))  # try using a GRU instead, for fun
 model.add(Dense(1))
 model.add(Activation('sigmoid'))
+
+#model.summary()
+#exit()
 
 # try using different optimizers and different optimizer configs
 model.compile(loss='binary_crossentropy',

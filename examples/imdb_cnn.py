@@ -17,15 +17,13 @@ from keras.layers import Embedding
 from keras.layers import Convolution1D, MaxPooling1D
 from keras.datasets import imdb
 from keras import backend as K
-#from keras.layers.core import K
-#import tensorflow as tf
-#K._LEARNING_PHASE = tf.constant(0) # try with 1
+
 
 # set parameters:
-max_features = 5000
-maxlen = 400
+max_features = 5000 # number of different words
+maxlen = 400 #number of words in a sentence/review, time_step_size
 batch_size = 32
-embedding_dims = 50
+embedding_dims = 50 # one word to length-50 vector
 nb_filter = 250
 filter_length = 3
 hidden_dims = 250
@@ -50,7 +48,8 @@ print('X_test shape:', X_test.shape)
 # X_train shape: (25000, 400)
 # X_test shape: (25000, 400)
 
-
+print('y_train shape:', y_train.shape)
+print('y_test shape:', y_test.shape)
 
 print('Build model...')
 model = Sequential()
@@ -68,7 +67,7 @@ model.add(Embedding(max_features,
 
 # we add a Convolution1D, which will learn nb_filter
 # word group filters of size filter_length:
-# one input to 50(nb_filter) output, each output the result of  conv filter size 3 applied to the input
+# one input to 50(nb_filter) output, each output the result of  conv filter length 3 applied to the input
 model.add(Convolution1D(nb_filter=nb_filter,
                         filter_length=filter_length,
                         border_mode='valid',
@@ -90,6 +89,8 @@ model.add(Activation('relu'))
 model.add(Dense(1))
 model.add(Activation('sigmoid'))
 
+model.summary()
+
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
@@ -98,12 +99,4 @@ model.fit(X_train, y_train,
           nb_epoch=nb_epoch,
           validation_data=(X_test, y_test))
           
-# after model.fit()
-# rowX=X_test[0]
-# xxx preds = model.predict_classes(rowX, verbose=0)
-#preds = model.predict_classes(X_test, verbose=0)
-K.set_learning_phase(0) 
-get_layer_output = K.function([model.input],  [model.layers[0].output] )
-layer_output = get_layer_output([ X_test[0:batch_size] ])  #xxx , keras_learning_phase='bob')
-print('embedding layer op shape = ', layer_output.shape)
-print('embedding layer op[0:2] = ', layer_output[0:2])
+

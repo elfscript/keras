@@ -92,8 +92,8 @@ if ngram_range > 1:
     # Integer values are greater than max_features in order
     # to avoid collision with existing features.
     start_index = max_features + 1
-    token_indice = {v: k+start_index for k, v in enumerate(ngram_set)}
-    indice_token = {token_indice[k]: k for k in token_indice}
+    token_indice = {v: k+start_index for k, v in enumerate(ngram_set)} # v -> k, (1, 3) -> 1337
+    indice_token = {token_indice[k]: k for k in token_indice} # k-> v, 1337 -> (1, 3)
 
     # max_features is the highest integer that could be found in the dataset.
     max_features = np.max(list(indice_token.keys())) + 1

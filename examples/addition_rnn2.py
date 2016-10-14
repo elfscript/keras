@@ -171,7 +171,7 @@ for _ in range(LAYERS):
 model.add(TimeDistributed(Dense(len(chars)))) #layer 3
 model.add(Activation('softmax')) # layer 4
 
-
+model.summary()
 
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
