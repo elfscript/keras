@@ -20,6 +20,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Embedding
 from keras.layers import LSTM, SimpleRNN, GRU
 from keras.datasets import imdb
+import mytime
 
 max_features = 20000 # top 20k words from dictionary
 maxlen = 80  # number of words per sentence/review, cut texts after this number of words (among top max_features most common words)

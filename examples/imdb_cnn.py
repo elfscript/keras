@@ -17,7 +17,7 @@ from keras.layers import Embedding
 from keras.layers import Convolution1D, MaxPooling1D
 from keras.datasets import imdb
 from keras import backend as K
-
+import mytime
 
 # set parameters:
 max_features = 5000 # number of different words
@@ -39,10 +39,10 @@ print(X_test[0:3])
 print('Pad sequences (samples x time)')
 X_train = sequence.pad_sequences(X_train, maxlen=maxlen)
 X_test = sequence.pad_sequences(X_test, maxlen=maxlen)
-X_train= X_train[0:1000]
-X_test= X_test[0:500]
-y_train= y_train[0:1000]
-y_test= y_test[0:500]
+#X_train= X_train[0:1000]
+#X_test= X_test[0:500]
+#y_train= y_train[0:1000]
+#y_test= y_test[0:500]
 print('X_train shape:', X_train.shape)
 print('X_test shape:', X_test.shape)
 # X_train shape: (25000, 400)
